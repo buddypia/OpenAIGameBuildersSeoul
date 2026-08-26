@@ -1,0 +1,489 @@
+import type { Locale } from './locale';
+import { en } from './messages.en';
+import { ja } from './messages.ja';
+
+/**
+ * Player-facing copy, one tree per language.
+ *
+ * The Korean tree is the schema: `Messages` is derived from it, so a missing or
+ * misspelled key in another language fails the TypeScript build instead of
+ * silently rendering `undefined` in the UI.
+ */
+const ko = {
+  meta: {
+    documentTitle: '에코 테라리움 (Eco Terrarium: Micro Evolution) - 생태계 지휘자',
+  },
+  common: {
+    close: '닫기',
+    cancel: '취소',
+  },
+  units: {
+    /** "3분 05초" */
+    duration: (minutes: number, seconds: number) => `${minutes}분 ${seconds < 10 ? '0' : ''}${seconds}초`,
+    seconds: (value: number) => `${value}초`,
+    organisms: (count: number) => `${count}마리`,
+    totalOrganisms: (count: number) => `총 ${count}개체`,
+    speciesCount: (count: number) => `${count}종`,
+    generation: (value: number) => `${value}세대`,
+  },
+  language: {
+    groupLabel: '언어 선택',
+    optionLabel: (name: string) => `${name}`,
+  },
+  topbar: {
+    title: '에코 테라리움',
+    subtitle: '유리병 속 생태계의 균형을 관찰하고 조절하세요',
+    navLabel: '보조 메뉴',
+    judgeShort: '투어',
+    judgeFull: '심사위원 퀵투어',
+    encyclopedia: '도감',
+    encyclopediaTitle: '생물 도감 열기',
+    quests: '퀘스트',
+    questsTitle: '퀘스트 목록 열기',
+    customization: '커스텀',
+    customizationTitle: '테라리움 디자인 커스텀',
+    photo: '스냅샷',
+    photoTitle: '포토 모드 & 스냅샷',
+    hive: 'Hive 공유',
+    hiveTitle: 'Com2uS Hive 소셜 공유',
+    helpTitle: '게임 가이드',
+  },
+  discovery: {
+    kicker: '새 생물종을 기록했습니다',
+    action: '도감 확인',
+  },
+  dna: {
+    defaultCreatorName: '생태계 지휘자',
+    defaultTerrariumName: '나만의 에코 테라리움',
+  },
+  startScreen: {
+    kicker: 'MICRO EVOLUTION SIMULATOR',
+    title: '에코 테라리움',
+    tagline: '작은 유리병 안에서, 생명의 균형을 지휘하세요.',
+    description:
+      '빛·수분·온도와 영양을 조절해 생산자부터 포식자까지 이어지는 먹이사슬을 돌보는 힐링 생태계 시뮬레이션입니다.',
+    objectiveTitle: '게임의 목적',
+    objectiveBody:
+      '어느 한 종이 지나치게 많아지거나 사라지지 않도록 관리하며, 새로운 종과 더 높은 바이오 하모니를 발견하세요.',
+    playTitle: '이렇게 플레이하세요',
+    steps: [
+      { label: '빛과 수분', description: '식물이 자랄 환경을 만드세요.' },
+      { label: '영양과 촉매', description: '유리병에 먹이를 떨어뜨리세요.' },
+      { label: '온도와 균형', description: '변화에 적응하는 생태계를 지켜보세요.' },
+    ],
+    footnote: '포식과 섭식은 유리병 안에서 빛나는 파편 효과로 확인할 수 있어요.',
+    action: '테라리움 시작하기',
+  },
+  hud: {
+    environmentSectionLabel: '환경 조작',
+    toolGroupLabel: '유리병 도구 선택',
+    tools: {
+      inspect: {
+        button: '현미경 관찰',
+        buttonTitle: '미생물을 클릭하여 현미경으로 관찰하고 유전자를 분석합니다',
+        guideTitle: '현미경 렌즈',
+        guideDetail: '빛나는 생물을 클릭해 이름, 세대, 에너지와 유전자를 자세히 살펴보세요.',
+      },
+      feed: {
+        button: '영양제 투하',
+        buttonTitle: '유리병 안을 클릭하여 유기 영양제 사료를 투하합니다',
+        guideTitle: '영양제 스포이드',
+        guideDetail: '에너지가 부족한 생물 근처에 한 번씩 투하하세요. 과도한 투하는 균형을 깨뜨릴 수 있어요.',
+      },
+      mutagen: {
+        button: '돌연변이 촉매',
+        buttonTitle: '돌연변이 촉매제를 주입하여 급격한 유전 변이를 유도합니다',
+        guideTitle: '돌연변이 촉매',
+        guideDetail: '특별한 진화를 노릴 때만 쓰세요. 고온 환경과 함께 사용하면 변화가 더 극적입니다.',
+      },
+      tap: {
+        button: '유리병 노크',
+        buttonTitle: '유리병을 똑똑 두드려 충격파를 발생시킵니다',
+        guideTitle: '유리병 노크',
+        guideDetail: '짧은 충격파로 생물의 움직임을 관찰할 수 있어요. 반복해서 두드리면 스트레스를 줄 수 있습니다.',
+      },
+    },
+    dayNightLabel: '낮/밤 순환',
+    dayNightTitle: '낮/밤 자동 순환 모드 토글',
+    speedGroupLabel: '시뮬레이션 배속',
+    play: '시뮬레이션 재생',
+    pause: '시뮬레이션 일시정지',
+    playPauseTitle: '시뮬레이션 일시정지 / 재생',
+    unmute: '오디오 켜기',
+    mute: '오디오 끄기',
+    muteTitle: '절차적 오디오 BGM 음소거 토글',
+    microscopeHowToTitle: '현미경 관찰 방법',
+    microscopeHowToCompact: '유리병 속 생물을 선택하면 개체 정보를 바로 확인할 수 있습니다.',
+    microscopeSteps: [
+      '‘현미경 관찰’ 도구를 선택합니다.',
+      '유리병 속 빛나는 생물을 클릭하거나 터치합니다.',
+      '이름·나이·세대·유전자를 관찰창에서 확인합니다.',
+    ],
+    sliders: {
+      sunlight: {
+        label: '일조량 (Sunlight)',
+        aria: '일조량',
+        low: '어두움',
+        mid: '광합성 촉진',
+        high: '작열',
+      },
+      moisture: {
+        label: '수분 / 강우 (Rain)',
+        aria: '수분 및 강우',
+        low: '건조',
+        mid: '촉촉함',
+        high: '폭우',
+      },
+      temperature: {
+        label: '온도 (Temperature)',
+        aria: '온도',
+        low: '-10°C (빙하기)',
+        mid: '22°C (온대)',
+        high: '45°C (열대)',
+      },
+      nutrients: {
+        label: '영양염류 (Nutrients)',
+        aria: '영양염류',
+        low: '척박',
+        mid: '비옥함',
+        high: '과영양',
+      },
+    },
+  },
+  canvas: {
+    inspectAria: '현미경 관찰: 유리병 속 생물을 클릭하거나 터치하면 관찰창이 열립니다',
+    defaultAria: '에코 테라리움 유리병',
+    hints: {
+      inspect: '생물을 클릭하거나 터치해 관찰창을 여세요',
+      feed: '유리병 안을 선택해 영양제를 투하하세요',
+      mutagen: '유리병 안을 선택해 촉매제를 투하하세요',
+      tap: '유리병을 선택해 충격파를 만드세요',
+    },
+  },
+  advisor: {
+    sectionLabel: '생태계 상태 및 다음 조언',
+    title: '생태계 어드바이스',
+    subtitle: '건강도와 현재 환경을 함께 읽습니다',
+    healthAria: (health: number) => `생태계 건강도 ${health}%`,
+    readingsLabel: '환경 반응 요약',
+    readingNames: {
+      sunlight: '빛',
+      moisture: '수분',
+      temperature: '온도',
+    },
+    readings: {
+      'sunlight.low': { label: '빛 부족', detail: '광합성이 느려집니다' },
+      'sunlight.high': { label: '강한 직사광', detail: '과열과 녹조를 주의하세요' },
+      'sunlight.balanced': { label: '부드러운 채광', detail: '생산자가 안정적으로 자랍니다' },
+      'moisture.low': { label: '건조 주의', detail: '수분 스트레스가 커집니다' },
+      'moisture.high': { label: '폭우 상태', detail: '과습과 탁수를 주의하세요' },
+      'moisture.balanced': { label: '촉촉한 순환', detail: '분해와 수생 활동이 활발합니다' },
+      'temperature.cold': { label: '저온 경보', detail: '성에가 생기고 대사가 둔화됩니다' },
+      'temperature.hot': { label: '고온 경보', detail: '열기와 증기가 생물에 부담됩니다' },
+      'temperature.pressure': { label: '적응 압력', detail: '일부 생물이 온도 스트레스를 받습니다' },
+      'temperature.balanced': { label: '온대 안정', detail: '대부분의 생물이 편안한 온도입니다' },
+    },
+    advice: {
+      recover: {
+        title: '회복이 필요해요',
+        detail: '일조량 45–70%, 수분 50–80%, 온도 18–26°C로 먼저 되돌리고 영양제를 한 번 투하해 보세요.',
+      },
+      temperature: {
+        title: '온도부터 완화하세요',
+        detail: '극한 온도는 에너지 소모를 키웁니다. 적응 진화를 노리는 중이 아니라면 22°C 근처가 안전합니다.',
+      },
+      'moisture.low': {
+        title: '수분 균형을 맞추세요',
+        detail: '비를 내려 수분을 50% 이상으로 올려 보세요.',
+      },
+      'moisture.high': {
+        title: '수분 균형을 맞추세요',
+        detail: '강우를 줄여 80% 아래로 내려 탁수를 예방하세요.',
+      },
+      'sunlight.low': {
+        title: '빛을 다듬을 시간이에요',
+        detail: '일조량을 조금 올려 생산자에게 에너지를 주세요.',
+      },
+      'sunlight.high': {
+        title: '빛을 다듬을 시간이에요',
+        detail: '직사광을 70% 안팎으로 낮춰 과열을 피하세요.',
+      },
+      diversity: {
+        title: '다양성을 돌보세요',
+        detail: '영양제를 한 번 투하한 뒤 먹이사슬 네 칸의 개체수가 함께 유지되는지 관찰해 보세요.',
+      },
+      observe: {
+        title: '지금은 관찰하기 좋아요',
+        detail: '생태계가 안정적입니다. 현미경 관찰로 세대와 유전자를 살피거나, 작은 환경 변화를 실험해 보세요.',
+      },
+    },
+  },
+  stats: {
+    sectionLabel: '생태계 관측 지표',
+    health: '생태계 건강도',
+    harmony: '바이오 하모니',
+    foodWeb: '먹이사슬 개체수',
+    trophic: {
+      producer: '생산자',
+      herbivore: '1차 소비자',
+      predator: '포식자',
+      decomposer: '분해자',
+    },
+    chartTitle: '로트카-볼테라 동역학 파동',
+    chartLegend: {
+      producers: '식물',
+      herbivores: '초식',
+      predators: '포식',
+    },
+    chartEmpty: '시뮬레이션 데이터 축적 중...',
+    biodiversity: "생물 다양성 H':",
+    unlocked: '도감 해금:',
+    survival: '생존 지속:',
+    extinction: '누적 사멸/순환:',
+  },
+  inspector: {
+    dialogLabel: '개체 관찰창',
+    unknownName: '미생물',
+    unknownSpecies: '미확인 생물',
+    saveName: '이름 저장',
+    editName: '이름 수정',
+    energy: '에너지 / 체력',
+    age: '나이 / 수명',
+    genomeTitle: '유전자 분석 (Genome DNA)',
+    genomeDimensions: '10차원 표현형 벡터',
+    genome: {
+      size: '크기 계수 (Size)',
+      speed: '유영 속도 (Speed)',
+      tempOpt: '선호 최적 온도',
+      moistOpt: '선호 최적 수분',
+      defense: '외피 방어력',
+      mutationRate: '돌연변이율',
+      metabolism: '대사 효율 (Metabolism)',
+      hue: '체색 색상 (Hue)',
+      bioluminescence: '생체 발광 (Biolum.)',
+    },
+    injectMutagen: '개체에 돌연변이 촉매제 주입하기',
+  },
+  encyclopedia: {
+    dialogLabel: '가상 생물 도감',
+    title: '가상 생물 도감 (Encyclopedia)',
+    progress: (unlocked: number, total: number, percent: number) => `${unlocked} / ${total} 발견 (${percent}%)`,
+    subtitle: '작은 유리병 속에서 탄생하는 16종 미생물의 진화 계통과 비밀',
+    filters: {
+      all: '전체 (All)',
+      producer: '생산자 (Producers)',
+      herbivore: '1차 소비자 (Herbivores)',
+      predator: '포식자 (Predators)',
+      decomposer: '분해자 (Decomposers)',
+    },
+    lockedName: '??? 미확인 생물',
+    lockedScientific: '조건 만족 시 진화',
+    lockedTitle: '아직 발견되지 않은 미확인 종',
+    lockedBody: '테라리움 환경을 조절하여 진화의 조건을 맞춰보세요.',
+    loreTitle: '생태계 관찰 기록 (Lore)',
+    traitsTitle: '고유 생체 형질',
+    traits: {
+      tempOpt: '최적 온도',
+      moistOpt: '최적 수분',
+      speed: '이동 속도',
+      bioluminescence: '생체 발광도',
+    },
+    hintTitle: '진화 단서 (Evolution Hint)',
+  },
+  quests: {
+    dialogLabel: '생태계 지휘자 퀘스트',
+    title: '생태계 지휘자 퀘스트 (Quests)',
+    progress: (completed: number, total: number, percent: number) => `${completed} / ${total} 달성 (${percent}%)`,
+    subtitle: '목표를 달성하고 고유한 테라리움 커스텀 파츠와 시약을 해금하세요',
+    reward: (title: string) => `보상: ${title}`,
+    completed: '완료됨',
+    inProgress: '진행 중',
+  },
+  customization: {
+    dialogLabel: '테라리움 디자인 커스텀',
+    title: '테라리움 디자인 커스텀 (Customization)',
+    subtitle: '유리병 형태, 바닥 토양, 배경 환경을 자유롭게 꾸며보세요',
+    bottleTitle: '유리병 외형 (Bottle Shape)',
+    substrateTitle: '바닥 토양 테마 (Substrate Theme)',
+    backgroundTitle: '배경 환경 테마 (Background Theme)',
+    bottles: {
+      'classic-jar': { name: '클래식 보틀', desc: '부드러운 곡선의 기본 원통형 유리병' },
+      'geometric-dome': { name: '지오메트릭 돔', desc: '다이아몬드 컷팅 유리 돔' },
+      'antique-flask': { name: '앤티크 플라스크', desc: '신비로운 연금술사 둥근 플라스크' },
+      'crystal-sphere': { name: '마법 수정구', desc: '공중에 부유하는 몽환적 구체' },
+    },
+    substrates: {
+      'moss-forest': { name: '이끼 숲 (Moss Forest)', desc: '생명력이 넘치는 푸른 이끼와 토양' },
+      'deep-sea-sand': { name: '심해 산호 모래 (Deep Sea)', desc: '푸른빛으로 빛나는 해저 모래' },
+      'volcanic-obsidian': { name: '화산 흑요석 (Volcanic)', desc: '마그마의 열기를 품은 흑요석 암반' },
+      'crystal-cave': { name: '자수정 동굴 (Crystal Cave)', desc: '보랏빛 수정이 솟아난 암석 지대' },
+    },
+    backgrounds: {
+      'cozy-lab': { name: '아늑한 연구실', desc: '따뜻한 감성의 서재와 조명' },
+      'dawn-mist': { name: '새벽 안개 숲', desc: '상쾌한 피톤치드와 아침 햇살' },
+      'sunset-window': { name: '석양의 창가', desc: '붉게 물드는 황혼의 노을빛' },
+      'cosmic-aurora': { name: '오로라 우주', desc: '은하수와 춤추는 극광' },
+    },
+  },
+  photo: {
+    dialogLabel: '포토 모드와 스냅샷',
+    title: '포토 모드 & 스냅샷 (Photo Mode)',
+    subtitle: '아름다운 테라리움의 순간을 감성 필터와 함께 간직하세요',
+    loading: '캡처 로딩 중...',
+    filtersTitle: '감성 필터 선택 (Filters)',
+    filters: {
+      original: '내추럴',
+      vintage: '빈티지 필름',
+      neon: '사이버 네온',
+      pastel: '드림 파스텔',
+      noir: '클래식 흑백',
+    },
+    download: '고화질 스냅샷 이미지 저장 (PNG)',
+  },
+  help: {
+    dialogLabel: '에코 테라리움 플레이 가이드',
+    title: '에코 테라리움 플레이 가이드 (How to Play)',
+    subtitle: '작은 유리병 속 생태계 지휘자가 되는 방법',
+    loopTitle: '1. 생태계의 4대 순환 고리 (Core Loop)',
+    loopBody: '유리병 안에는 4단계의 생명체들이 공존하며 끊임없이 물질과 에너지를 순환시킵니다:',
+    loopRoles: {
+      producer: '빛/수분 광합성',
+      herbivore: '식물 섭식 & 배설',
+      predator: '초식 생물 사냥',
+      decomposer: '사체를 거름으로',
+    },
+    toolsTitle: '2. 환경 조절 및 신의 손 도구 (God Tools)',
+    tools: {
+      sunlight: { name: '일조량', desc: '생산자의 광합성을 촉진하고 온도를 미세하게 올립니다.' },
+      moisture: { name: '수분/강우', desc: '물방울이 맺히며 수생 생물과 분해자가 활성화됩니다.' },
+      temperature: { name: '온도 조절', desc: '빙하기(-10°C)부터 온난기(45°C)까지 돌연변이 압력을 줍니다.' },
+      tap: { name: '유리병 노크', desc: '병을 톡톡 쳐서 생물들의 무리를 흩어지게 만듭니다.' },
+    },
+    speciationTitle: '3. 16종 생물 도감 & 절차적 바이오 사운드',
+    speciationBody:
+      '극한의 환경 변화나 돌연변이 촉매제를 주입하면 16종의 독창적인 신종 생물이 탄생합니다. 생태계의 다양성이 증가할수록 Web Audio API가 실시간으로 더 풍성한 바이오 화음 BGM을 만들어냅니다!',
+    saveTitle: '4. 자동 저장 & 초기화',
+    saveBody:
+      '테라리움과 퀘스트 진행도는 이 브라우저에 자동으로 저장되어, 창을 닫았다 열어도 이어서 이어집니다. 처음부터 다시 시작하고 싶다면 아래에서 초기화할 수 있습니다. 도감 해금과 퀘스트 기록도 함께 사라집니다.',
+    resetWarning: '정말 초기화할까요? 지금의 생태계는 되돌릴 수 없습니다.',
+    resetConfirm: '초기화하기',
+    resetTrigger: '테라리움 처음부터 다시 시작',
+  },
+  hive: {
+    dialogLabel: 'Hive 공유 및 방문',
+    title: 'Com2uS Hive 소셜 플랫폼',
+    subtitle: '테라리움 DNA 코드로 공유하고 다른 지휘자의 생태계를 방문하세요',
+    tabs: {
+      share: '내 테라리움 공유',
+      import: '코드 불러오기',
+      visitor: '가상 방문 모드',
+      leaderboard: '글로벌 랭킹',
+    },
+    referenceId: '테라리움 참조 ID',
+    dnaValid: '생태계 DNA 유효함',
+    copyCode: '참조 ID 복사',
+    copyLink: '링크 복사',
+    copied: '복사됨!',
+    referenceNote:
+      '참조 ID는 링크를 구분하기 위한 지문이며, 생태계 전체를 복원하려면 아래의 전체 DNA 링크를 공유해주세요.',
+    deepLink: '웹 원클릭 딥링크 (Direct Web Link)',
+    snapshot: {
+      discovered: '발견 생물',
+      harmony: '하모니 스코어',
+      population: '현재 개체수',
+    },
+    importIntro:
+      '친구가 공유한 전체 DNA 링크 또는 압축 DNA 문자열을 입력하면 환경, 도감 해금, 개체 분포와 유전자 풀이 함께 복원됩니다.',
+    importPlaceholder: '전체 DNA 링크 또는 압축 DNA 문자열을 붙여넣으세요...',
+    importEmptyError: '코드 또는 URL을 입력해주세요.',
+    importInvalidError: '유효하지 않은 테라리움 DNA 코드입니다. 코드를 다시 확인해주세요.',
+    importAction: '테라리움 생태계 불러오기',
+    visitor: {
+      featured: '추천 인기 테라리움: 냥이의 이끼 숲',
+      featuredOwner: '지휘자: HIDEA_Kim (고양이와 스프 공식 테마)',
+      giftPollen: '꽃가루 선물하기',
+      giftPollenDone: '선물 완료!',
+      giftPollenDesc: '상대방에게 영양 버프 부여',
+      harvestSpore: '오로라 핀 포자 채집',
+      harvestSporeDone: '채집 완료!',
+      harvestSporeDesc: '내 테라리움으로 입식',
+    },
+    leaderboard: [
+      { playerName: '지휘자_미쉘', terrariumName: '오로라 성운 정원', badge: '그랜드 마에스트로' },
+      { playerName: '냥이와스프팬', terrariumName: '말랑 젤리 보틀', badge: '힐링 수호자' },
+      { playerName: '민트로켓_데이브', terrariumName: '심해 크라켄 생태계', badge: '심해 탐험가' },
+      { playerName: '바이오_코덱스', terrariumName: '극저온 크리스탈 돔', badge: '빙하기 개척자' },
+    ],
+  },
+  showcase: {
+    dialogLabel: '심사위원 전용 쇼케이스',
+    title: '심사위원 전용 쇼케이스 & Codex 개발기',
+    subtitle: '1분 핵심 기능 퀵 투어 프리셋 및 OpenAI Codex 협업 아키텍처',
+    tabPresets: '1분 퀵 쇼케이스 프리셋 (Quick Presets)',
+    tabCodex: 'OpenAI Codex AI 개발기 (Dev Story)',
+    presetApplied: (name: string) => `'${name}' 프리셋이 성공적으로 적용되었습니다!`,
+    applyPreset: '프리셋 적용하기',
+    presets: {
+      prosperity: {
+        name: '즉시 번영 모드',
+        heading: '01. 즉시 번영 모드 (Full Prosperity)',
+        caption: '생태계 최고 황금기 연출',
+        body: '4단계 트로픽 레벨(식물, 초식, 포식, 분해자)이 완벽한 균형을 이루며 수려하게 유영하는 최적의 생태계를 즉시 조성합니다.',
+      },
+      mutation: {
+        name: '돌연변이 가속',
+        heading: '돌연변이 가속 (Mutation Burst)',
+        caption: '신종 진화 이벤트 유도',
+        body: '온도를 35°C로 올리고 다량의 돌연변이 촉매를 주입하여 5초 이내에 오로라 핀, 글로우 테일 등 희귀 변종 탄생을 시연합니다.',
+      },
+      iceage: {
+        name: '빙하기 위기 탈출',
+        heading: '빙하기 위기 탈출 (Ice Age)',
+        caption: '극저온 적응 시뮬레이션',
+        body: '온도를 -5°C로 급랭시켜 유리병에 서리가 맺히고, 극한의 추위 속에서 크리스탈 리프와 저온 내성종이 적응하는 과정을 관찰합니다.',
+      },
+      symphony: {
+        name: '하모니 오케스트라',
+        heading: '하모니 오케스트라 (Full Symphony)',
+        caption: 'Web Audio 사운드스케이프 청음',
+        body: '생태계 건강도를 100%로 설정하여 앰비언트 패드, 펜타토닉 바이오 챠임, 빗소리 폴리가 어우러지는 화음의 극치를 청음합니다.',
+      },
+    },
+    codex: {
+      whereTitle: '1. Codex 활용 영역 (Where)',
+      whereItems: [
+        {
+          term: '수리 생태계 모델',
+          body: '로트카-볼테라(Lotka-Volterra) 4연립 미분방정식 4차 룬게-쿠타(RK4) 수치해석 모듈 설계.',
+        },
+        {
+          term: '절차적 사운드 신스',
+          body: '외부 MP3 의존 없는 Web Audio API 순수 코드 기반 펜타토닉 적응형 화음 생성기.',
+        },
+        {
+          term: '유전 유체 시뮬레이션',
+          body: '10차원 표현형 벡터 드리프트 및 Boids 무리 행동 최적화.',
+        },
+      ],
+      problemTitle: '2. Codex와의 기술 문제 해결 (Problem Solving)',
+      problemItems: [
+        {
+          term: '미분방정식 발산 억제',
+          body: '개체수가 0으로 급감하거나 무한 폭증하는 비선형 진동 문제를 환경 완충 계수(Environmental Buffer Multiplier)를 도입하여 수학적으로 안정화.',
+        },
+        {
+          term: '60FPS 가비지 컬렉션 최적화',
+          body: '매 프레임 수백 개의 파티클 생성 시 발생하는 GC 스파이크를 엔티티 풀링 및 캔버스 렌더링 배치(Batching)로 극복.',
+        },
+      ],
+      decisionTitle: '3. 인간 창작자의 예술적·기획적 결단 (Human Decision)',
+      decisionBody:
+        '단순한 숫자 나열 시뮬레이션에 머물지 않고, 김동규 대표의 ‘고양이와 스프’와 같은 따뜻한 감성 힐링 인터랙션과 김대훤 대표의 ‘민트로켓’다운 참신한 샌드박스 발견의 재미를 결합하여 독창적인 예술 작품으로 승화시켰습니다.',
+    },
+  },
+};
+
+export type Messages = typeof ko;
+
+/** Language order in the UI: Korean first, then English, then Japanese. */
+export const MESSAGES: Record<Locale, Messages> = { ko, en, ja };

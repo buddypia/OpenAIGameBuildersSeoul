@@ -1,0 +1,23 @@
+{
+  "northStar": "The Quiet Field Observatory",
+  "motion": {
+    "microInteraction": "180ms ease",
+    "noticeEntrance": "340ms cubic-bezier(.16, 1, .3, 1)",
+    "reducedMotion": "Disable nonessential animation and transitions."
+  },
+  "breakpoints": {
+    "mobile": "< 640px",
+    "stackedWorkspace": "< 1024px",
+    "desktop": ">= 1024px"
+  },
+  "depth": {
+    "panel": "0 12px 28px rgb(0 0 0 / .16)",
+    "stage": "0 22px 44px rgb(0 0 0 / .28)"
+  },
+  "rules": [
+    "Canvas first, controls second.",
+    "One botanical accent for actions and healthy states.",
+    "Icons reinforce text; they do not replace it.",
+    "No decorative emoji, neon glow, or generic glassmorphism."
+  ]
+}

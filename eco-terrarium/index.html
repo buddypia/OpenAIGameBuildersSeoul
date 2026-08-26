@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/jpeg" href="/icon.jpg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>에코 테라리움 (Eco Terrarium: Micro Evolution) - 생태계 지휘자</title>
+    <meta name="description" content="빛, 수분, 온도를 조절하여 작은 유리병 속 가상 생물들의 진화와 균형을 지켜내는 힐링 생태계 시뮬레이션 게임" />
+    <meta property="og:title" content="에코 테라리움 (Eco Terrarium: Micro Evolution)" />
+    <meta property="og:description" content="OpenAI Game Builders Seoul 출품작 - 생태계 샌드박스 힐링 진화 시뮬레이션" />
+    <meta property="og:image" content="/cover.jpg" />
+    <!-- Pretendard Web Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        user-select: none;
+        background-color: #080f14;
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(74, 222, 128, 0.3);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(74, 222, 128, 0.6);
+      }
+    </style>
+  </head>
+  <body class="bg-eco-bg text-slate-100 antialiased selection:bg-eco-glow selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

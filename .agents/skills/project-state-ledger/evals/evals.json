@@ -1,0 +1,16 @@
+{
+  "skill_name": "project-state-ledger",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "daily-dungeon의 전투 밸런싱 PRD를 갱신해. 현재 작업이 terrarium-100의 문서를 잘못 참조하지 않도록 막고, 구현된 것·다음 계획·검증 근거를 구분해 줘.",
+      "expected_output": "대상 저장소와 활성 Task Context를 검증한 뒤, 근거 있는 상태 문서와 PRD 변경만 기록한다.",
+      "files": [],
+      "expectations": [
+        "대상 저장소 경계를 확인한다.",
+        "확정 사실과 계획을 구분한다.",
+        "근거 없는 완료 주장을 하지 않는다."
+      ]
+    }
+  ]
+}

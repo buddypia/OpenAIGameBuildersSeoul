@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "project": "<project name>",
+  "repository_root": "<absolute repository root>",
+  "task_id": "<TASK-YYYYMMDD-short-slug>",
+  "revision": 1,
+  "status": "confirmed",
+  "evidence_cutoff": "<commit SHA or working-tree timestamp>",
+  "allowed_write_paths": ["docs/**", ".ai-work/**"],
+  "canonical_requirement_ids": ["REQ-001"],
+  "acceptance_criteria": [
+    {"id": "AC-001", "statement": "<observable condition>", "verification": "<command or observation>"}
+  ],
+  "worktree_clean_at_start": true
+}

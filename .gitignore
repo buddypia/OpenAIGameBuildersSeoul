@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+dist-server/
+coverage/
+
+# Temporary and cache files
+.tmp/
+.DS_Store
+*.log
+
+# AI scratch/locks
+.ai-work/
