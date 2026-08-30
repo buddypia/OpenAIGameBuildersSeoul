@@ -4,9 +4,9 @@ import {
   Award,
   Palette,
   Camera,
-  Globe,
   HelpCircle,
   Leaf,
+  QrCode,
   Zap,
 } from 'lucide-react';
 
@@ -34,8 +34,9 @@ import { PhotoModal } from '../features/photo';
 import {
   clearEcosystemLocally,
   decodeEcosystemDNA,
-  HiveShareModal,
   loadEcosystemLocally,
+  QrPlayBadge,
+  QrShareModal,
   saveEcosystemLocally,
 } from '../features/hive';
 import { JudgeShowcaseModal } from '../features/showcase';
@@ -87,7 +88,7 @@ const TerrariumApp: React.FC = () => {
   const [isQuestsOpen, setIsQuestsOpen] = useState(false);
   const [isCustomizationOpen, setIsCustomizationOpen] = useState(false);
   const [isPhotoOpen, setIsPhotoOpen] = useState(false);
-  const [isHiveShareOpen, setIsHiveShareOpen] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
   const [isJudgeShowcaseOpen, setIsJudgeShowcaseOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
@@ -218,7 +219,7 @@ const TerrariumApp: React.FC = () => {
       });
       engine.seedInitialEcosystem();
     } else if (preset === 'mutation') {
-      setEnv({
+      const mutationEnv = {
         sunlight: 85,
         moisture: 75,
         temperature: 36,
@@ -226,10 +227,14 @@ const TerrariumApp: React.FC = () => {
         dayNightCycle: 0.2,
         autoDayNight: false,
         timeSpeed: 2,
-      });
+      };
+      setEnv(mutationEnv);
       for (let i = 0; i < 6; i++) {
         engine.addFoodPellet('mutagen', Math.random() * 400 + 200, Math.random() * 200 + 150);
       }
+      // 시연 중에는 몇 초 안에 반드시 신종이 나와야 하므로, 종분화 직전까지
+      // 유전자가 표류한 개체를 함께 넣어 준다. 판정은 평소 규칙 그대로다.
+      engine.primeSpeciation(mutationEnv);
     } else if (preset === 'iceage') {
       setEnv({
         sunlight: 30,
@@ -396,14 +401,14 @@ const TerrariumApp: React.FC = () => {
             <span className="hidden md:inline">{t.topbar.photo}</span>
           </button>
 
-          {/* Hive Share */}
+          {/* Play on a phone */}
           <button
-            onClick={() => setIsHiveShareOpen(true)}
-            className="topbar-action hidden sm:flex"
-            title={t.topbar.hiveTitle}
+            onClick={() => setIsQrOpen(true)}
+            className="topbar-action"
+            title={t.topbar.qrTitle}
           >
-            <Globe className="w-4 h-4" />
-            <span className="hidden md:inline">{t.topbar.hive}</span>
+            <QrCode className="w-4 h-4" />
+            <span className="hidden md:inline">{t.topbar.qr}</span>
           </button>
 
           {/* Guide */}
@@ -437,6 +442,9 @@ const TerrariumApp: React.FC = () => {
             onCanvasClickFeedback={handleUserInteraction}
             isSimulationActive={isGameStarted}
           />
+
+          {/* 관객이 버튼을 누르지 않아도 바로 스캔해 들어올 수 있게 캔버스 위에 상시 노출한다. */}
+          <QrPlayBadge onExpand={() => setIsQrOpen(true)} />
         </section>
 
         {/* Right Side: Environment HUD & Ecological Statistics Panel */}
@@ -512,24 +520,7 @@ const TerrariumApp: React.FC = () => {
 
       {isPhotoOpen && <PhotoModal onClose={() => setIsPhotoOpen(false)} />}
 
-      {isHiveShareOpen && (
-        <HiveShareModal
-          currentDNA={currentDNA}
-          stats={stats}
-          onImportDNA={(dna) => {
-            restoreDNA(dna);
-          }}
-          onGiftPollen={() => {
-            for (let i = 0; i < 5; i++) {
-              engine.addFoodPellet('nutrient', Math.random() * 400 + 200, Math.random() * 200 + 150);
-            }
-          }}
-          onHarvestSpore={(speciesId) => {
-            engine.spawnOrganism(speciesId, undefined, undefined, 2);
-          }}
-          onClose={() => setIsHiveShareOpen(false)}
-        />
-      )}
+      {isQrOpen && <QrShareModal onClose={() => setIsQrOpen(false)} />}
 
       {isJudgeShowcaseOpen && (
         <JudgeShowcaseModal

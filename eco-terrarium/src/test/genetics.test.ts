@@ -55,3 +55,45 @@ describe('Genetics & Evolution System', () => {
     expect(solarCandidate?.id).toBe('solar_bloom');
   });
 });
+
+describe('checkSpeciation skips species that are already discovered', () => {
+  it('reaches a locked species even when an unlocked one matches first', () => {
+    const speciesList = INITIAL_SPECIES_DATABASE.map((sp) => ({ ...sp, spawnConditions: { ...sp.spawnConditions } }));
+    const glowTail = speciesList.find((sp) => sp.id === 'glow_tail')!;
+    const env = {
+      sunlight: 85,
+      moisture: 75,
+      temperature: 36,
+      nutrients: 80,
+      dayNightCycle: 0.2,
+      autoDayNight: false,
+      timeSpeed: 2,
+    };
+
+    // 글로우 테일 문턱까지 표류한 젤리 위글. 목록 앞자리의 해금된 종들이
+    // 가로채면 이 개체는 영원히 신종이 되지 못한다.
+    const result = checkSpeciation('jelly_wiggle', { ...glowTail.baseGenome }, env, speciesList);
+
+    expect(result).not.toBeNull();
+    expect(result!.unlocked).toBe(false);
+    expect(result!.id).toBe('glow_tail');
+  });
+
+  it('never returns an already unlocked species', () => {
+    const speciesList = INITIAL_SPECIES_DATABASE.map((sp) => ({ ...sp, spawnConditions: { ...sp.spawnConditions } }));
+    const env = {
+      sunlight: 70,
+      moisture: 70,
+      temperature: 24,
+      nutrients: 70,
+      dayNightCycle: 0.25,
+      autoDayNight: true,
+      timeSpeed: 1,
+    };
+
+    for (const source of speciesList) {
+      const result = checkSpeciation(source.id, { ...source.baseGenome }, env, speciesList);
+      if (result) expect(result.unlocked).toBe(false);
+    }
+  });
+});

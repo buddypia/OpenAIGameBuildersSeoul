@@ -322,3 +322,59 @@ describe('EcosystemEngine restoration and invariants', () => {
     expect(engine.getStats().totalOrganisms).toBeGreaterThan(0);
   });
 });
+
+// 심사위원 퀵투어 "돌연변이 가속" 프리셋과 같은 환경.
+const mutationBurstEnv = {
+  sunlight: 85,
+  moisture: 75,
+  temperature: 36,
+  nutrients: 80,
+  dayNightCycle: 0.2,
+  autoDayNight: false,
+  timeSpeed: 2,
+} as const;
+
+describe('mutation burst preset speciation', () => {
+  it('picks a species that the current environment can actually unlock', () => {
+    const engine = new EcosystemEngine();
+    const target = engine.primeSpeciation(mutationBurstEnv);
+
+    expect(target).not.toBeNull();
+    expect(target!.unlocked).toBe(false);
+    expect(target!.spawnConditions.specialCondition).toBeUndefined();
+
+    const cond = target!.spawnConditions;
+    if (cond.minTemp !== undefined) expect(mutationBurstEnv.temperature).toBeGreaterThanOrEqual(cond.minTemp);
+    if (cond.minSun !== undefined) expect(mutationBurstEnv.sunlight).toBeGreaterThanOrEqual(cond.minSun);
+    if (cond.minMoist !== undefined) expect(mutationBurstEnv.moisture).toBeGreaterThanOrEqual(cond.minMoist);
+
+    // 부모 종은 이미 해금돼 있어야 무대에서 유리병에 실제로 존재한다.
+    const parent = engine.speciesList.find((sp) => sp.id === cond.parentSpeciesId);
+    expect(parent?.unlocked).toBe(true);
+  });
+
+  it('unlocks a new species within 5 seconds on every run', () => {
+    const RUNS = 100;
+    const OBSERVE_SECONDS = 5;
+
+    for (let run = 0; run < RUNS; run++) {
+      let unlockedDuringDemo = 0;
+      const engine = new EcosystemEngine({ onSpeciesUnlocked: () => (unlockedDuringDemo += 1) });
+      engine.primeSpeciation(mutationBurstEnv);
+
+      for (let frame = 0; frame < OBSERVE_SECONDS * 60 && unlockedDuringDemo === 0; frame++) {
+        engine.update(1 / 60, mutationBurstEnv);
+      }
+
+      expect(unlockedDuringDemo).toBeGreaterThan(0);
+    }
+  }, 20000);
+
+  it('leaves the speciation rule itself untouched', () => {
+    // primeSpeciation은 개체만 준비한다 — 해금은 update의 종분화 판정이 한다.
+    const engine = new EcosystemEngine();
+    const before = engine.speciesList.filter((sp) => sp.unlocked).length;
+    engine.primeSpeciation(mutationBurstEnv);
+    expect(engine.speciesList.filter((sp) => sp.unlocked).length).toBe(before);
+  });
+});

@@ -48,6 +48,10 @@ export function occursDuringInterval(ratePerSecond: number, seconds: number, ran
   return random() < probability;
 }
 
+function clampTrait(value: number, min: number, max: number): number {
+  return Number(Math.max(min, Math.min(max, value)).toFixed(2));
+}
+
 export class EcosystemEngine {
   private static readonly MAX_ORGANISMS = 100;
   private static readonly MAX_FOOD_PELLETS = 200;
@@ -262,6 +266,65 @@ export class EcosystemEngine {
       decayTime: type === 'carcass' ? 30 : 50,
     });
     if (emitAudio) this.callbacks.onAudioEvent?.('drop');
+  }
+
+  /**
+   * 현재 환경에서 해금 가능한 미해금 종 하나를 골라, 그 종의 부모 개체를
+   * "이미 환경 압력을 받아 유전자가 표류한" 상태로 유리병에 넣는다.
+   *
+   * 종분화 판정 자체는 손대지 않는다. 평소와 똑같은 checkSpeciation이
+   * 몇 초 안에 자연히 발화하도록 조건만 갖춰 주는 것이라, 시연 중에도
+   * 신종은 언제나 종분화 규칙을 통과해서 태어난다.
+   *
+   * 기본 8마리인 이유: 종분화 판정은 개체당 SPECIATION_RATE(0.08/초)로 굴러가고
+   * 프리셋은 2배속이므로 초당 약 1.28회가 된다. 5초면 누락 확률이 0.2% 아래로
+   * 떨어져, 무대에서 "5초 안에 신종이 태어납니다"를 말할 수 있게 된다.
+   */
+  public primeSpeciation(env: EnvironmentState, count = 8): SpeciesInfo | null {
+    const target = this.speciesList.find((sp) => {
+      if (sp.unlocked) return false;
+      const cond = sp.spawnConditions;
+      // 특수 조건(밤·열충격·하모니)은 환경 슬라이더만으로 보장할 수 없으므로 제외한다.
+      if (!cond?.parentSpeciesId || cond.specialCondition) return false;
+      if (!this.speciesList.some((p) => p.id === cond.parentSpeciesId && p.unlocked)) return false;
+      if (cond.minSun !== undefined && env.sunlight < cond.minSun) return false;
+      if (cond.maxSun !== undefined && env.sunlight > cond.maxSun) return false;
+      if (cond.minMoist !== undefined && env.moisture < cond.minMoist) return false;
+      if (cond.maxMoist !== undefined && env.moisture > cond.maxMoist) return false;
+      if (cond.minTemp !== undefined && env.temperature < cond.minTemp) return false;
+      if (cond.maxTemp !== undefined && env.temperature > cond.maxTemp) return false;
+      if (cond.minNutrients !== undefined && env.nutrients < cond.minNutrients) return false;
+      return true;
+    });
+    if (!target) return null;
+
+    const bg = target.baseGenome;
+    const innerW = this.bounds.width - 2 * this.bounds.paddingX;
+    const innerH = this.bounds.height - 2 * this.bounds.paddingY;
+    for (let i = 0; i < count; i++) {
+      // 바닥 한 줄로 몰리면 무대에서 "갑자기 생물이 우르르 생겼다"로 보인다.
+      // 유리병 전체에 흩어 놓아 원래 있던 개체군처럼 섞이게 한다.
+      const spreadX = this.bounds.paddingX + ((i + 0.5) / count) * innerW + (Math.random() - 0.5) * (innerW / count);
+      const spreadY = this.bounds.paddingY + Math.random() * innerH;
+      const org = this.spawnOrganism(target.spawnConditions.parentSpeciesId!, spreadX, spreadY, 2);
+      if (!org) break;
+
+      // 형질은 목표 종 쪽으로 표류시키되 색(hue)은 부모 것을 남긴다 —
+      // 아직 부모 종으로 보이지만 유전자는 이미 경계에 와 있는 상태.
+      const jitter = (spread: number) => (Math.random() - 0.5) * spread;
+      org.genome = {
+        ...org.genome,
+        size: clampTrait(bg.size + jitter(0.3), 0.5, 2.5),
+        speed: clampTrait(bg.speed + jitter(0.3), 0.4, 3.0),
+        tempOpt: clampTrait(bg.tempOpt + jitter(4), -10, 45),
+        defense: clampTrait(bg.defense + jitter(0.14), 0, 1),
+      };
+      org.sizePx = 12 * org.genome.size;
+      // 종분화 판정은 age > 8인 개체만 대상으로 하므로 세대를 미리 넘겨 둔다.
+      org.age = 9;
+    }
+
+    return target;
   }
 
   /** Restores the shareable state while keeping all engine invariants intact. */

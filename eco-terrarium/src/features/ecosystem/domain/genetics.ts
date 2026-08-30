@@ -95,6 +95,10 @@ export function checkSpeciation(
 ): SpeciesInfo | null {
   for (const sp of speciesList) {
     if (sp.id === currentSpeciesId) continue;
+    // 이미 해금된 종은 '새로운 발견'이 아니다. 이걸 건너뛰지 않으면
+    // 조건이 비어 있는 기본 4종(루미 플로라·젤리 위글·팬텀 립·마이셀 링커)이
+    // 목록 앞자리에서 먼저 걸려, 정작 새로 태어날 종까지 판정이 도달하지 못한다.
+    if (sp.unlocked) continue;
     const cond = sp.spawnConditions;
     if (!cond) continue;
 

@@ -26,6 +26,7 @@
 | FR-AUD-01~03 | 절차적 Web Audio 앰비언트·효과음 | done | `src/features/audio/**` | 브라우저 인터랙션 후 오디오 컨텍스트 활성화 확인 |
 | FR-HIVE-01~04 | DNA 압축 공유 및 로컬 자동 저장·복원 | done | `src/features/hive/**` | lz-string 인코딩/디코딩 및 비정상 스토리지 복구 테스트 통과 |
 | NFR-PERF-01~02 | 60FPS 렌더링 및 모바일 반응형 | done | `src/features/canvas/**`, `src/app/**` | desktop/mobile 레이아웃 및 번들 빌드 최적화 완료 |
+| NFR-UX-02 | 한국어·영어·일본어 다국어 지원 | done | `src/features/i18n/**` | 언어 카탈로그 3종이 한국어 트리 스키마를 만족(TypeScript 검증), 컴포넌트 내 한국어 문자열 0건을 `architecture.test.ts`가 확인 |
 
 ## Decisions
 
@@ -58,3 +59,4 @@
 | 2026-08-26T12:11:51Z | TASK-20260826-genome-expansion | 문서·UI의 Genome 차원을 10으로 정정, FR-HIVE-04 로컬 자동 저장·복원과 테라리움 초기화를 구현, 공유 코드 압축 표기를 lz-string으로 정정 | `pnpm test` 55 tests 통과, `pnpm build` 통과 |
 | 2026-08-26T12:44:00Z | TASK-20260826-ui-refinement | 상단바 버튼 접근성 개선 및 UI 인터랙션 최적화 | UI 컴포넌트 단위 테스트 통과 |
 | 2026-08-26T12:50:00Z | TASK-20260826-inspector-polish | 인스펙터 관찰 및 10차원 유전자 시각화 연동 | 화면 렌더링 검증 완료 |
+| 2026-08-27T01:05:00Z | TASK-20260827-i18n-ko-en-ja | 제출 전용 산출물을 `.tmp/submission/`으로 이동하고 참조 경로 갱신, 일본어 문서를 한국어로 번역, `features/i18n` 컨텍스트를 추가해 한국어·영어·일본어 3개 언어를 지원 | `npx tsc --noEmit` 통과, `npx vitest run` 8파일 58 tests 통과, `npx vite build` 통과, Chrome DevTools로 3개 언어 화면 확인 (console errors 0건) |

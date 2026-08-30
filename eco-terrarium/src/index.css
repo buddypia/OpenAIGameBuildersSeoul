@@ -1,3 +1,44 @@
+/*
+ * Pretendard(SIL Open Font License 1.1)를 저장소에 함께 담아 번들한다.
+ * CDN에서 받아 쓰면 행사장 Wi-Fi가 끊길 때 글꼴이 무너지고,
+ * "네트워크 호출 0건"이라는 설명과도 어긋난다.
+ */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/Pretendard-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/Pretendard-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/Pretendard-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/Pretendard-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/Pretendard-ExtraBold.woff2') format('woff2');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -158,6 +199,33 @@ button { -webkit-tap-highlight-color: transparent; }
   -webkit-backdrop-filter: blur(10px);
 }
 .stage-instruction svg { color: #9fe7bd; flex: none; }
+
+/* Always-on scan target for onlookers. Sits above the stage vignette (z-index 1). */
+.qr-badge {
+  z-index: 3;
+  width: 9.5rem;
+  color: #d5e8dc;
+  background: rgb(5 20 16 / .82);
+  border: 1px solid rgb(190 236 210 / .18);
+  border-radius: 16px;
+  box-shadow: 0 18px 42px rgb(0 0 0 / .38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.qr-badge-code { line-height: 0; box-shadow: 0 6px 16px rgb(0 0 0 / .28); }
+.qr-badge-zoom { background: rgb(6 24 18 / .55); }
+.qr-badge-restore {
+  z-index: 3;
+  color: #b6eac5;
+  background: rgb(5 20 16 / .82);
+  border: 1px solid rgb(190 236 210 / .18);
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgb(0 0 0 / .3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: color 140ms ease, border-color 140ms ease;
+}
+.qr-badge-restore:hover { color: #f0fdf4; border-color: rgb(187 222 204 / .34); }
 
 /* Keep the selected inspection tool visible at the point of interaction. */
 .cursor-inspect {
