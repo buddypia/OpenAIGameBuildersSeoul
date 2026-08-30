@@ -29,6 +29,8 @@ app(합성·화면 상태)
 
 ## 컨텍스트 맵
 
+각 컨텍스트의 공개 계약, 불변 조건, 검증은 [`docs/contexts/`](contexts/)의 SPEC이 상세히 기술한다. 아래 표는 소유 관계의 요약이다.
+
 | 컨텍스트 | 책임 | 주요 근거 | 공개 입구 |
 | --- | --- | --- | --- |
 | `ecosystem` | 환경 조작, 4단계 생태계, 유전, 진화, Canvas 관찰 | FR-ENV-01~05, FR-SIM-01~03, NFR-PERF-01~03 | `src/features/ecosystem/index.ts` |
@@ -36,7 +38,7 @@ app(합성·화면 상태)
 | `progression` | 퀘스트와 진행 판정 | FR-PROG-01 | `src/features/progression/index.ts` |
 | `customization` | 유리병, 바닥재, 배경 선택 | FR-PROG-02 | `src/features/customization/index.ts` |
 | `photo` | 포토 모드와 내보내기 | FR-PROG-03 | `src/features/photo/index.ts` |
-| `hive` | DNA 공유·가져오기 검증·방문 UI | FR-HIVE-01~03 | `src/features/hive/index.ts` |
+| `hive` | DNA 공유·가져오기 검증·방문 UI·로컬 자동 저장 | FR-HIVE-01~04 | `src/features/hive/index.ts` |
 | `audio` | Web Audio 적응형 사운드 | FR-AUD-01~03, NFR-UX-01 | `src/features/audio/index.ts` |
 | `showcase` | 심사위원 프리셋과 개발 스토리 | FR-JUDGE-01~02 | `src/features/showcase/index.ts` |
 | `onboarding` | 플레이 가이드와 첫 이해 | NFR-UX-02 | `src/features/onboarding/index.ts` |
@@ -74,9 +76,9 @@ src/
 
 ## 개발 시 판단 순서
 
-1. `REQUIREMENTS.md`의 FR/NFR, `PRD.md`의 게임 루프, `PLAN.md`의 해당 페이즈를 읽는다.
-2. 이 문서의 컨텍스트 맵으로 소유 컨텍스트를 정한다. 둘에 걸치면 어느 쪽이 규칙을 소유하고 어느 쪽이 공개 API를 소비하는지 정한다.
-3. `docs/TASK_TEMPLATE.md`에 범위, 비범위, 리스크, FR, DoD, 검증 방법을 기록한다.
+1. `FEATURES.md`에서 대상 기능을 찾고, `REQUIREMENTS.md`의 FR/NFR과 `PRD.md`의 게임 루프를 읽는다.
+2. 이 문서의 컨텍스트 맵으로 소유 컨텍스트를 정한다. 둘에 걸치면 어느 쪽이 규칙을 소유하고 어느 쪽이 공개 API를 소비하는지 정한다. 해당 컨텍스트의 `docs/contexts/<context>.md`에서 깨뜨리면 안 되는 불변 조건을 확인한다.
+3. `docs/specs/`에 작업 폴더를 만들어 범위, 비범위, 리스크, FR, DoD, 검증 방법을 기록한다(작은 변경은 `docs/TASK_TEMPLATE.md`의 단일 카드로 대신해도 된다).
 4. 규칙·불변 조건은 `domain`, UI에서 쓰는 동작의 조정은 `application`, 브라우저 I/O는 `infrastructure`, React/Canvas는 `presentation`에 둔다.
 5. 새로 외부에서 쓸 대상은 `index.ts`에서 명시적으로 export 한다. 내부 구현 import를 늘리지 않는다.
 6. 정상·실패·경계 케이스를 테스트하고 `pnpm test`와 `pnpm build`를 실행한다. 완료 보고는 `docs/DEFINITION_OF_DONE.md`를 따른다.
@@ -92,4 +94,4 @@ src/
 
 ## 구조의 자동 검증
 
-`src/test/architecture.test.ts`는 다음을 확인한다. 옛 기술별 디렉터리가 되살아나지 않았는지, 각 기능에 공개 API가 있는지, `app`이 내부 구현이 아니라 공개 API에만 의존하는지, 도메인이 UI 라이브러리에 의존하지 않는지, 그리고 플레이어에게 보이는 한국어 문구가 컴포넌트가 아니라 언어 카탈로그에만 있는지. 새 컨텍스트를 추가했다면 그 공개 입구와 테스트의 기대 목록도 함께 갱신한다.
+`src/test/architecture.test.ts`는 다음을 확인한다. 옛 기술별 디렉터리가 되살아나지 않았는지, 각 기능에 공개 API가 있는지, `app`이 내부 구현이 아니라 공개 API에만 의존하는지, 도메인이 UI 라이브러리에 의존하지 않는지, 그리고 플레이어에게 보이는 한국어 문구가 컴포넌트가 아니라 언어 카탈로그에만 있는지. 새 컨텍스트를 추가했다면 그 공개 입구, 테스트의 기대 목록, `docs/contexts/`의 SPEC, `FEATURES.md`의 컨텍스트 요약 표도 함께 갱신한다.

@@ -4,11 +4,14 @@
 
 ## 구현 전 최소 점검
 
-1. `REQUIREMENTS.md`에서 대상 FR/NFR을 특정한다. 존재하지 않는 요구사항이라면 먼저 요건을 추가하거나 사용자에게 확인한다.
-2. `PRD.md`에서 플레이어 경험, 데이터, 게임 루프에 미치는 영향을 확인한다.
-3. `PLAN.md`에서 기존 페이즈와의 정합성을 확인한다.
-4. [ARCHITECTURE.md](ARCHITECTURE.md)의 컨텍스트 맵으로 기능의 소유자를 하나 정한다.
-5. [TASK_TEMPLATE.md](TASK_TEMPLATE.md)에 범위·비범위·리스크·FR·관측 가능한 DoD·검증을 기록한다.
+1. [FEATURES.md](../FEATURES.md)에서 대상 기능의 현재 상태와 소유 컨텍스트를 찾는다.
+2. [REQUIREMENTS.md](../REQUIREMENTS.md)에서 대상 FR/NFR을 특정한다. 존재하지 않는 요구사항이라면 먼저 요건을 추가하거나 사용자에게 확인한다.
+3. [PRD.md](../PRD.md)에서 플레이어 경험, 데이터, 게임 루프에 미치는 영향을 확인한다.
+4. [contexts/](contexts/)의 해당 컨텍스트 SPEC에서 공개 계약과 불변 조건을 확인한다. 여기서 깨뜨리면 안 되는 성질이 무엇인지 미리 안다.
+5. [ARCHITECTURE.md](ARCHITECTURE.md)의 컨텍스트 맵으로 기능의 소유자를 하나 정한다.
+6. [specs/](specs/)에 작업 폴더를 만들어 범위·비범위·리스크·FR·관측 가능한 DoD·검증을 기록한다. 작은 변경은 [TASK_TEMPLATE.md](TASK_TEMPLATE.md)의 단일 카드로 대신해도 된다.
+
+`PLAN.md`는 초기 10개 페이즈의 완료 기록이다. 앞으로의 작업 목록은 `PLAN.md`가 아니라 [FEATURES.md](../FEATURES.md)와 [specs/](specs/)가 관리한다.
 
 ## 구현 규칙
 
@@ -37,4 +40,5 @@
 - 변경을 하나의 컨텍스트가 소유하고, 경계를 넘는 의존은 공개 API를 경유한다.
 - 도메인 규칙 테스트와, 영향받은 공개 계약의 테스트가 있다.
 - `pnpm test`, `pnpm build`, 필요한 수동 확인의 증거가 있다.
-- `ARCHITECTURE.md`, PRD, 요구사항, 코드 사이에 모순이 없다.
+- `ARCHITECTURE.md`, 컨텍스트 SPEC, PRD, 요구사항, 코드 사이에 모순이 없다.
+- 계약이나 불변 조건이 바뀌었다면 `docs/contexts/<context>.md`를, 상태가 바뀌었다면 `FEATURES.md`와 `docs/PROJECT_STATE.md`를 함께 갱신했다.

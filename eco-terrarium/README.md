@@ -36,7 +36,9 @@
 
 ### 작업 완료 기준 (Definition of Done)
 
-모든 변경은 요구사항과 PRD를 확인한 뒤 작업별 인수 기준과 검증 증거를 정합니다. 작업 시작·완료의 필수 절차는 [완료의 정의 운영 가이드](docs/DEFINITION_OF_DONE.md), 경량 DDD의 경계와 의존 방향은 [아키텍처](docs/ARCHITECTURE.md), 새 기능의 구현 절차는 [기능 개발 프로토콜](docs/FEATURE_DEVELOPMENT.md), 복제해서 쓰는 작업 기록은 [작업 카드 템플릿](docs/TASK_TEMPLATE.md)을 참조하세요.
+모든 변경은 요구사항과 PRD를 확인한 뒤 작업별 인수 기준과 검증 증거를 정합니다. 기능 전체 목록과 상태는 [기능 개발 리스트](FEATURES.md), 작업 시작·완료의 필수 절차는 [완료의 정의 운영 가이드](docs/DEFINITION_OF_DONE.md), 경량 DDD의 경계와 의존 방향은 [아키텍처](docs/ARCHITECTURE.md), 컨텍스트별 공개 계약과 불변 조건은 [컨텍스트 SPEC](docs/contexts/), 새 기능의 구현 절차는 [기능 개발 프로토콜](docs/FEATURE_DEVELOPMENT.md), 변경 단위 작업 기록은 [작업 SPEC](docs/specs/)을 참조하세요.
+
+문서는 네 층으로 나뉩니다. **PRD**(왜) → **REQUIREMENTS**(무엇, FR/NFR ID 레지스트리) → **컨텍스트 SPEC**(어떤 계약으로, 도메인별) → **작업 SPEC**(이번에 무엇을, 변경 단위). 추적 키는 FR/NFR ID 하나입니다.
 
 ### 1. 개발 서버 실행
 ```bash
@@ -63,15 +65,18 @@ pnpm preview
 
 ```
 eco-terrarium/
-├── REQUIREMENTS.md           # 상세 요구사항 명세서
+├── FEATURES.md               # 기능 개발 리스트(FR/NFR·소유 컨텍스트·상태의 단일 인덱스)
+├── REQUIREMENTS.md           # 상세 요구사항 명세서(FR/NFR ID 레지스트리)
 ├── PRD.md                    # 제품 기획서
-├── PLAN.md                   # 개발 실행 계획서 및 진척도 체크리스트
+├── PLAN.md                   # 초기 10개 페이즈의 완료 기록
 ├── AGENTS.md                 # 모든 후속 작업에 적용되는 DoD 운영 규칙
 ├── docs/
 │   ├── DEFINITION_OF_DONE.md # DoD 게이트·작업 유형별 검증 기준
-│   ├── TASK_TEMPLATE.md      # 작업 계획·DoD·검증 기록 양식
-│   ├── tasks/                # 작업별 카드(범위·DoD·검증 증거) 기록
+│   ├── TASK_TEMPLATE.md      # 작은 변경용 단일 작업 카드 양식
+│   ├── contexts/             # 컨텍스트별 SPEC(공개 계약·불변 조건·검증)
+│   ├── specs/                # 변경 단위별 spec/plan/tasks 폴더
 │   ├── ARCHITECTURE.md       # 경량 DDD의 경계·공개 API·의존 방향
+│   ├── PROJECT_STATE.md      # 요구사항 추적표·결정 기록·변경 이력
 │   └── FEATURE_DEVELOPMENT.md# 요구사항 기반 기능 개발 절차
 ├── index.html                # 엔트리 HTML
 ├── package.json              # 패키지 및 의존성 설정
