@@ -34,7 +34,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # pnpm 11은 node:sqlite를 쓰므로 Node 22.13 이상이 필요하다.
+          node-version: 22
           cache: 'pnpm'
           cache-dependency-path: 'eco-terrarium/pnpm-lock.yaml'
 
