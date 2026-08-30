@@ -27,7 +27,9 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          # pnpm-workspace.yaml의 allowBuilds는 pnpm 11 문법이라, 9로는
+          # "packages field missing or empty"로 설치가 죽는다.
+          version: 11
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
