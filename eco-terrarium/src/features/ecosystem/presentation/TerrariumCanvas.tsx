@@ -42,6 +42,7 @@ export const TerrariumCanvas: React.FC<Props> = ({
   };
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const hoveredOrgIdRef = useRef<string | null>(null);
   const lastTimeRef = useRef<number>(performance.now());
   const animFrameIdRef = useRef<number>(0);
@@ -76,13 +77,21 @@ export const TerrariumCanvas: React.FC<Props> = ({
     const rect = container.getBoundingClientRect();
     const width = Math.floor(rect.width);
     const height = Math.floor(rect.height);
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    if (width <= 0 || height <= 0) return;
 
-    if (canvas.width !== Math.floor(width * pixelRatio) || canvas.height !== Math.floor(height * pixelRatio)) {
-      canvas.width = Math.floor(width * pixelRatio);
-      canvas.height = Math.floor(height * pixelRatio);
-      const context = canvas.getContext('2d');
-      context?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    // 장면이 전부 부드러운 그라디언트라 픽셀을 더 채워도 선명도 이득이 거의 없다.
+    // 레티나에서 백버퍼가 300만 픽셀을 넘어가면 래스터 비용만 그만큼 커진다.
+    const maxPixels = 2_400_000;
+    const requested = Math.min(window.devicePixelRatio || 1, 2);
+    const pixelRatio = Math.min(requested, Math.sqrt(maxPixels / (width * height)));
+    const nextWidth = Math.floor(width * pixelRatio);
+    const nextHeight = Math.floor(height * pixelRatio);
+
+    if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+      canvas.width = nextWidth;
+      canvas.height = nextHeight;
+      contextRef.current = canvas.getContext('2d');
+      contextRef.current?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       engine.resizeBounds(
         width,
         height,
@@ -94,13 +103,32 @@ export const TerrariumCanvas: React.FC<Props> = ({
 
   useEffect(() => {
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // 레이아웃 변화(패널 접기, 모바일 주소창)도 잡되 한 프레임에 한 번만 반영한다.
+    let queued = false;
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        handleResize();
+      });
+    };
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(schedule);
+    if (containerRef.current) observer?.observe(containerRef.current);
+    window.addEventListener('resize', schedule);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
   }, [handleResize]);
 
   // Main Animation Loop
   useEffect(() => {
     const loop = (now: number) => {
+      // 다음 프레임을 먼저 예약한다. 예전에는 마지막 줄에서 예약했기 때문에
+      // 렌더 중 예외가 한 번이라도 나면 테라리움이 영구히 멈춰 버렸다.
+      animFrameIdRef.current = requestAnimationFrame(loop);
+
       const dt = Math.min(0.1, (now - lastTimeRef.current) / 1000);
       lastTimeRef.current = now;
 
@@ -112,29 +140,25 @@ export const TerrariumCanvas: React.FC<Props> = ({
 
       // Render frame
       const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          renderer.render({
-            canvas,
-            ctx,
-            organisms: engine.organisms,
-            foodPellets: engine.foodPellets,
-            spores: engine.spores,
-            shockwaves: engine.shockwaves,
-            consumptionEffects: engine.consumptionEffects,
-            env: renderState.env,
-            customization: renderState.customization,
-            speciesMap: renderState.speciesMap,
-            selectedOrganismId: renderState.selectedOrganism?.id || null,
-            hoveredOrganismId: hoveredOrgIdRef.current,
-            ecosystemHealth: renderState.ecosystemHealth,
-            time: now / 1000,
-          });
-        }
+      const ctx = contextRef.current ?? (contextRef.current = canvas?.getContext('2d') ?? null);
+      if (canvas && ctx) {
+        renderer.render({
+          canvas,
+          ctx,
+          organisms: engine.organisms,
+          foodPellets: engine.foodPellets,
+          spores: engine.spores,
+          shockwaves: engine.shockwaves,
+          consumptionEffects: engine.consumptionEffects,
+          env: renderState.env,
+          customization: renderState.customization,
+          speciesMap: renderState.speciesMap,
+          selectedOrganismId: renderState.selectedOrganism?.id || null,
+          hoveredOrganismId: hoveredOrgIdRef.current,
+          ecosystemHealth: renderState.ecosystemHealth,
+          time: now / 1000,
+        });
       }
-
-      animFrameIdRef.current = requestAnimationFrame(loop);
     };
 
     lastTimeRef.current = performance.now();

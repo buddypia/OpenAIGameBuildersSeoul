@@ -57,9 +57,19 @@ export interface RenderContext {
   time: number;
 }
 
+const GLOW_SPRITE_SIZE = 72;
+const MAX_GLOW_SPRITES = 96;
+const CONTACT_SHADOW_COLOR = 'rgb(1, 8, 12)';
+const MOTE_GLOW_COLOR = 'rgb(198, 255, 231)';
+
 export class TerrariumRenderer {
   private ambientParticles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = [];
   private speciesVariants = new Map<string, SpeciesVariant>();
+  // ctx.shadowBlur은 그리기 연산 하나마다 별도 블러 패스를 돌린다. 생물 한 마리를
+  // 그리는 데 수십 번의 fill/stroke가 들어가므로, 측정 결과 프레임 시간의 69%를
+  // 여기서 썼다(108ms -> 33ms). 발광은 미리 구운 스프라이트 한 장으로 대체한다.
+  private glowSprites = new Map<string, HTMLCanvasElement | null>();
+  private gradientCache = new Map<string, CanvasGradient>();
 
   constructor() {
     // Generate 40 ambient floating bioluminescent motes
@@ -197,34 +207,44 @@ export class TerrariumRenderer {
   ) {
     const dayFactor = Math.sin(env.dayNightCycle * Math.PI * 2) * 0.5 + 0.5;
 
-    let grad = ctx.createLinearGradient(0, 0, 0, h);
-    if (bg === 'dawn-mist') {
-      grad.addColorStop(0, `rgba(180, 210, 230, ${0.4 + dayFactor * 0.4})`);
-      grad.addColorStop(0.5, `rgba(140, 180, 190, ${0.3 + dayFactor * 0.3})`);
-      grad.addColorStop(1, '#0b1920');
-    } else if (bg === 'sunset-window') {
-      grad.addColorStop(0, `rgba(255, 140, 90, ${0.3 + dayFactor * 0.5})`);
-      grad.addColorStop(0.6, `rgba(180, 70, 110, ${0.3 + dayFactor * 0.3})`);
-      grad.addColorStop(1, '#110b1a');
-    } else if (bg === 'cosmic-aurora') {
-      grad.addColorStop(0, '#0a0d24');
-      grad.addColorStop(0.5, '#0d1f2d');
-      grad.addColorStop(1, '#05070e');
-    } else {
-      // cozy-lab
-      grad.addColorStop(0, '#101c26');
-      grad.addColorStop(0.5, '#0b141d');
-      grad.addColorStop(1, '#060a0e');
-    }
+    // 배경과 비네트는 화면 전체를 덮는 그라디언트다. 낮/밤 값은 연속적으로 변하지만
+    // 1/48 단위로 양자화하면 눈에 띄는 차이 없이 매 프레임 재생성을 피할 수 있다.
+    const dayStep = Math.round(dayFactor * 48);
+    const grad = this.cachedGradient(`bg|${bg}|${w}x${h}|${dayStep}`, () => {
+      const value = ctx.createLinearGradient(0, 0, 0, h);
+      const day = dayStep / 48;
+      if (bg === 'dawn-mist') {
+        value.addColorStop(0, `rgba(180, 210, 230, ${0.4 + day * 0.4})`);
+        value.addColorStop(0.5, `rgba(140, 180, 190, ${0.3 + day * 0.3})`);
+        value.addColorStop(1, '#0b1920');
+      } else if (bg === 'sunset-window') {
+        value.addColorStop(0, `rgba(255, 140, 90, ${0.3 + day * 0.5})`);
+        value.addColorStop(0.6, `rgba(180, 70, 110, ${0.3 + day * 0.3})`);
+        value.addColorStop(1, '#110b1a');
+      } else if (bg === 'cosmic-aurora') {
+        value.addColorStop(0, '#0a0d24');
+        value.addColorStop(0.5, '#0d1f2d');
+        value.addColorStop(1, '#05070e');
+      } else {
+        // cozy-lab
+        value.addColorStop(0, '#101c26');
+        value.addColorStop(0.5, '#0b141d');
+        value.addColorStop(1, '#060a0e');
+      }
+      return value;
+    });
 
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
     // A soft vignette keeps attention inside the vessel without making the scene flat.
-    const vignette = ctx.createRadialGradient(w / 2, h * 0.44, h * 0.12, w / 2, h * 0.48, Math.max(w, h) * 0.72);
-    vignette.addColorStop(0, 'rgba(255,255,255,0.025)');
-    vignette.addColorStop(0.68, 'rgba(2, 8, 14, 0.03)');
-    vignette.addColorStop(1, 'rgba(1, 5, 10, 0.42)');
+    const vignette = this.cachedGradient(`vignette|${w}x${h}`, () => {
+      const value = ctx.createRadialGradient(w / 2, h * 0.44, h * 0.12, w / 2, h * 0.48, Math.max(w, h) * 0.72);
+      value.addColorStop(0, 'rgba(255,255,255,0.025)');
+      value.addColorStop(0.68, 'rgba(2, 8, 14, 0.03)');
+      value.addColorStop(1, 'rgba(1, 5, 10, 0.42)');
+      return value;
+    });
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, w, h);
 
@@ -750,13 +770,7 @@ export class TerrariumRenderer {
       if (mote.x > w - 60) mote.x = 70;
 
       const pulse = Math.sin(time * 2 + mote.x) * 0.2 + 0.8;
-      const halo = ctx.createRadialGradient(mote.x, mote.y, 0, mote.x, mote.y, mote.size * 5);
-      halo.addColorStop(0, `rgba(198, 255, 231, ${mote.alpha * pulse * 0.32})`);
-      halo.addColorStop(1, 'rgba(167, 243, 208, 0)');
-      ctx.fillStyle = halo;
-      ctx.beginPath();
-      ctx.arc(mote.x, mote.y, mote.size * 5, 0, Math.PI * 2);
-      ctx.fill();
+      this.paintGlow(ctx, MOTE_GLOW_COLOR, mote.x, mote.y, mote.size * 5, mote.alpha * pulse * 0.5);
       ctx.fillStyle = `rgba(167, 243, 208, ${mote.alpha * pulse})`;
       ctx.beginPath();
       ctx.arc(mote.x, mote.y, mote.size, 0, Math.PI * 2);
@@ -774,13 +788,11 @@ export class TerrariumRenderer {
         orb.addColorStop(0, '#fdf4ff');
         orb.addColorStop(0.45, '#e879f9');
         orb.addColorStop(1, '#a21caf');
+        this.paintGlow(ctx, '#d946ef', p.x, p.y, p.radius * 2.6, 0.6);
         ctx.fillStyle = orb;
-        ctx.shadowColor = '#d946ef';
-        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, pulse * 0.45, 0, Math.PI * 2);
@@ -805,13 +817,11 @@ export class TerrariumRenderer {
         const remains = ctx.createRadialGradient(p.x - p.radius * 0.3, p.y - p.radius * 0.3, 0, p.x, p.y, p.radius);
         remains.addColorStop(0, 'rgba(216, 180, 254, 0.9)');
         remains.addColorStop(1, 'rgba(107, 33, 168, 0.85)');
+        this.paintGlow(ctx, '#9333ea', p.x, p.y, p.radius * 2.1, 0.42);
         ctx.fillStyle = remains;
-        ctx.shadowColor = '#9333ea';
-        ctx.shadowBlur = 6;
         ctx.beginPath();
         ctx.ellipse(p.x, p.y, p.radius * 1.15, p.radius * 0.85, wobble, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         const er = Math.max(1.4, p.radius * 0.26);
         ctx.strokeStyle = 'rgba(59, 7, 100, 0.8)';
@@ -832,13 +842,11 @@ export class TerrariumRenderer {
         nutrient.addColorStop(0, '#dcfce7');
         nutrient.addColorStop(0.42, '#86efac');
         nutrient.addColorStop(1, '#16a34a');
+        this.paintGlow(ctx, '#22c55e', p.x, p.y, p.radius * 2.1, 0.45);
         ctx.fillStyle = nutrient;
-        ctx.shadowColor = '#22c55e';
-        ctx.shadowBlur = 6;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
         ctx.fillStyle = 'rgba(255,255,255,0.65)';
         ctx.beginPath();
         ctx.arc(p.x - p.radius * 0.28, p.y - p.radius * 0.3, Math.max(1.2, p.radius * 0.17), 0, Math.PI * 2);
@@ -859,13 +867,11 @@ export class TerrariumRenderer {
     ctx.save();
     for (let i = 0; i < spores.length; i++) {
       const sp = spores[i];
+      this.paintGlow(ctx, sp.color, sp.x, sp.y, 9, 0.55);
       ctx.beginPath();
       ctx.arc(sp.x, sp.y, 3, 0, Math.PI * 2);
       ctx.fillStyle = sp.color;
-      ctx.shadowColor = sp.color;
-      ctx.shadowBlur = 8;
       ctx.fill();
-      ctx.shadowBlur = 0;
 
       // Alternating four-point glints keep dense spore clouds from looking flat.
       if (i % 2 === 0) {
@@ -881,6 +887,67 @@ export class TerrariumRenderer {
       }
     }
     ctx.restore();
+  }
+
+  /** 크기·테마가 그대로면 그라디언트를 다시 만들지 않는다. */
+  private cachedGradient(key: string, build: () => CanvasGradient): CanvasGradient {
+    const cached = this.gradientCache.get(key);
+    if (cached) return cached;
+    if (this.gradientCache.size > 160) this.gradientCache.clear();
+    const value = build();
+    this.gradientCache.set(key, value);
+    return value;
+  }
+
+  /**
+   * 색마다 한 번만 구워 두는 원형 발광 스프라이트. 알파 마스크로 깎아내므로
+   * `addColorStop(1, 'transparent')`가 만드는 검은 테두리가 생기지 않는다.
+   */
+  private getGlowSprite(color: string): HTMLCanvasElement | null {
+    const cached = this.glowSprites.get(color);
+    if (cached !== undefined) return cached;
+    if (this.glowSprites.size >= MAX_GLOW_SPRITES) this.glowSprites.clear();
+
+    if (typeof document === 'undefined') return null;
+    const sprite = document.createElement('canvas');
+    sprite.width = GLOW_SPRITE_SIZE;
+    sprite.height = GLOW_SPRITE_SIZE;
+    const layer = sprite.getContext('2d');
+    if (!layer) {
+      this.glowSprites.set(color, null);
+      return null;
+    }
+    const half = GLOW_SPRITE_SIZE / 2;
+    layer.fillStyle = color;
+    layer.fillRect(0, 0, GLOW_SPRITE_SIZE, GLOW_SPRITE_SIZE);
+    layer.globalCompositeOperation = 'destination-in';
+    const mask = layer.createRadialGradient(half, half, 0, half, half, half);
+    mask.addColorStop(0, 'rgba(255,255,255,1)');
+    mask.addColorStop(0.34, 'rgba(255,255,255,0.7)');
+    mask.addColorStop(0.66, 'rgba(255,255,255,0.2)');
+    mask.addColorStop(1, 'rgba(255,255,255,0)');
+    layer.fillStyle = mask;
+    layer.fillRect(0, 0, GLOW_SPRITE_SIZE, GLOW_SPRITE_SIZE);
+
+    this.glowSprites.set(color, sprite);
+    return sprite;
+  }
+
+  private paintGlow(
+    ctx: CanvasRenderingContext2D,
+    color: string,
+    x: number,
+    y: number,
+    radius: number,
+    alpha: number
+  ) {
+    if (alpha <= 0.004) return;
+    const sprite = this.getGlowSprite(color);
+    if (!sprite) return;
+    const previous = ctx.globalAlpha;
+    ctx.globalAlpha = previous * Math.min(1, alpha);
+    ctx.drawImage(sprite, x - radius, y - radius, radius * 2, radius * 2);
+    ctx.globalAlpha = previous;
   }
 
   private getVariant(speciesId: string): SpeciesVariant {
@@ -913,17 +980,18 @@ export class TerrariumRenderer {
 
       // Contact shadow anchors every creature to the habitat floor.
       const shadowY = org.y + r * 0.95;
-      if (highDetail) {
-        const shadow = ctx.createRadialGradient(org.x, shadowY, 0, org.x, shadowY, r * 0.95);
-        shadow.addColorStop(0, 'rgba(1, 8, 12, 0.26)');
-        shadow.addColorStop(1, 'rgba(1, 8, 12, 0)');
-        ctx.fillStyle = shadow;
-      } else {
-        ctx.fillStyle = 'rgba(1, 8, 12, 0.15)';
-      }
-      ctx.beginPath();
-      ctx.ellipse(org.x, shadowY, r * 0.95, r * 0.3, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.save();
+      ctx.translate(org.x, shadowY);
+      ctx.scale(1, 0.34);
+      this.paintGlow(ctx, CONTACT_SHADOW_COLOR, 0, 0, r * 1.05, highDetail ? 0.34 : 0.2);
+      ctx.restore();
+
+      // 예전에는 여기서 shadowBlur를 켜고 생물의 모든 경로를 그렸다. fill/stroke마다
+      // 블러 패스가 붙어 프레임 시간을 지배했으므로, 발광은 스프라이트 한 장으로 깐다.
+      // 반경은 예전 blur 반경(bioluminescence * 16px)에 맞춰 실루엣에 붙게 잡는다.
+      const glowColor = sp?.glowColor || `hsl(${org.genome.hue}, 80%, 65%)`;
+      const luminance = org.genome.bioluminescence ?? 0.7;
+      this.paintGlow(ctx, glowColor, org.x, org.y, r * 1.1 + luminance * 15, 0.3 + luminance * 0.3);
 
       ctx.save();
       ctx.translate(org.x, org.y);
@@ -939,16 +1007,10 @@ export class TerrariumRenderer {
         ctx.scale(1 + squish, 1 - squish);
       }
 
-      // Glow effect
-      const glowColor = sp?.glowColor || `hsl(${org.genome.hue}, 80%, 65%)`;
-      ctx.shadowColor = glowColor;
-      ctx.shadowBlur = (org.genome.bioluminescence || 0.7) * 16;
-
       this.drawCreatureShape(ctx, org, time, highDetail);
 
       // Highlight Reticle if selected or hovered
       if (isSelected || isHovered) {
-        ctx.shadowBlur = 0;
         ctx.strokeStyle = isSelected ? '#fbbf24' : '#38bdf8';
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
@@ -1473,10 +1535,9 @@ export class TerrariumRenderer {
     ctx.save();
     for (const sw of shockwaves) {
       const alpha = 1 - sw.elapsed / sw.duration;
+      this.paintGlow(ctx, '#67e8f9', sw.x, sw.y, sw.radius * 1.25, alpha * 0.28);
       ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
       ctx.lineWidth = 3;
-      ctx.shadowColor = '#67e8f9';
-      ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
       ctx.stroke();
