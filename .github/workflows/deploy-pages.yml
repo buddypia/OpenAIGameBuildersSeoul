@@ -45,6 +45,20 @@ jobs:
       - name: Build
         run: cd eco-terrarium && pnpm build
 
+      # rule-machine은 pnpm 워크스페이스가 아니라 독립 npm 프로젝트라 따로 설치·빌드한다.
+      - name: Install rule-machine dependencies
+        run: cd rule-machine && npm ci
+
+      - name: Test and build rule-machine
+        run: cd rule-machine && npm run verify
+
+      # eco-terrarium은 루트에, rule-machine은 /rule-machine/ 하위 경로에 올린다.
+      # vite base가 './'라서 하위 경로에서도 에셋 경로가 깨지지 않는다.
+      - name: Merge rule-machine into Pages output
+        run: |
+          mkdir -p eco-terrarium/dist/rule-machine
+          cp -R rule-machine/dist/. eco-terrarium/dist/rule-machine/
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

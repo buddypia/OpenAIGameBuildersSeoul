@@ -1,0 +1,29 @@
+{
+  "name": "the-rule-machine",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "verify:assets": "node tools/verify-zero-assets.mjs",
+    "verify:visual": "python3 tools/visual-check.py",
+    "verify:mobile": "python3 tools/mobile-check.py",
+    "verify": "npm run test && npm run verify:assets && npm run build"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.1.0",
+    "typescript": "^5.7.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vitest": "^3.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5"
+  }
+}

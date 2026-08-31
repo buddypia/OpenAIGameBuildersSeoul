@@ -1,0 +1,56 @@
+:root { color: #f7f3e8; background: #071217; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-synthesis: none; }
+* { box-sizing: border-box; }
+html { min-width: 320px; background: #071217; -webkit-text-size-adjust: 100%; }
+body { min-width: 320px; margin: 0; background: #071217; overscroll-behavior-y: contain; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid #ffbd4a; outline-offset: 4px; }
+.app-shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 42px; }
+.topbar { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid rgba(110, 231, 224, .35); padding-bottom: 18px; }
+.brand { color: #f7f3e8; display: inline-flex; gap: 10px; align-items: center; font-size: 13px; font-weight: 800; letter-spacing: -.7px; line-height: .86; text-decoration: none; }
+.brand-mark { background: #ffbd4a; color: #071217; display: grid; font-size: 23px; height: 42px; letter-spacing: -3px; padding-right: 4px; place-items: center; width: 42px; }
+.status-strip { align-items: center; display: flex; flex-wrap: wrap; font-size: 11px; gap: 13px; justify-content: flex-end; letter-spacing: .03em; text-transform: uppercase; }
+.status-strip b { color: #ffbd4a; font-size: 15px; }.status-strip i { color: #526b6d; font-style: normal; }.combos { border-left: 1px solid #3f5d60; color: #aabfbd; padding-left: 13px; }
+.hero { align-items: end; display: grid; gap: 32px; grid-template-columns: 1fr auto; padding: 62px 0 34px; }
+.eyebrow, .deck-label { color: #6ee7e0; font-size: 11px; font-weight: 700; letter-spacing: .14em; margin: 0 0 14px; }.hero h1 { font-size: clamp(42px, 7vw, 82px); font-weight: 800; letter-spacing: -.095em; line-height: .86; margin: 0; max-width: 700px; }.hero h1 em { color: #ffbd4a; font-style: normal; }.lead { color: #b7c4bf; font-family: system-ui, sans-serif; font-size: 15px; line-height: 1.6; margin: 27px 0 0; max-width: 555px; }
+.shift-meter { border-left: 1px solid #526b6d; min-width: 198px; padding: 0 0 7px 18px; }.shift-meter span { color: #aabfbd; display: block; font-size: 10px; letter-spacing: .06em; margin-bottom: 7px; }.shift-meter strong { color: #f7f3e8; display: block; font-size: 41px; letter-spacing: -.1em; line-height: .8; }.shift-meter small { color: #ffbd4a; font-size: 11px; letter-spacing: .08em; margin-left: 8px; }.meter-track { background: #254044; height: 5px; margin-top: 16px; overflow: hidden; }.meter-track i { background: #ffbd4a; display: block; height: 100%; transform-origin: left center; transition: transform .98s linear; will-change: transform; }
+.rule-deck { border-top: 1px solid #526b6d; padding-top: 12px; }.deck-label { color: #b7c4bf; }.deck-label span { color: #ff6c7a; margin: 0 8px; }.cards { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }.rule-card { background: #102126; border-left: 5px solid var(--rule-color); min-height: 130px; padding: 15px 18px; position: relative; }.rule-card.card-2 { transform: translateY(13px); }.card-index { color: #718787; font-size: 10px; }.rule-symbol { color: var(--rule-color); font-size: 36px; position: absolute; right: 18px; top: 11px; }.rule-card h2 { font-size: 22px; letter-spacing: -.08em; margin: 19px 0 6px; }.rule-card p { color: #b7c4bf; font-family: system-ui, sans-serif; font-size: 12px; margin: 0; }.shift-button { align-self: center; background: transparent; border: 1px solid #6ee7e0; color: #6ee7e0; font-size: 12px; font-weight: 700; min-height: 50px; padding: 0 16px; white-space: nowrap; }.shift-button:hover { background: #6ee7e0; color: #071217; }.shift-button span { font-size: 20px; vertical-align: -2px; }
+.machine { border: 1px solid #526b6d; margin-top: 46px; padding: 9px; }.canvas-frame { aspect-ratio: 16 / 9; background: #071217; overflow: hidden; position: relative; }.canvas-frame canvas { display: block; height: 100%; width: 100%; }.start-layer, .win-layer { align-items: center; background: rgba(7, 18, 23, .72); display: flex; flex-direction: column; inset: 0; justify-content: center; position: absolute; }.start-layer p, .win-layer p { color: #6ee7e0; font-size: clamp(9px, 1.5vw, 14px); font-weight: 700; letter-spacing: .13em; margin: 0 0 20px; text-align: center; }.win-layer p { color: #ffbd4a; font-size: clamp(20px, 4vw, 45px); letter-spacing: -.08em; }.start-layer button, .win-layer button { background: #ffbd4a; border: 0; color: #071217; font-size: 15px; font-weight: 800; padding: 15px 20px; }.start-layer button:hover, .win-layer button:hover { background: #fff3db; }.start-layer button span, .win-layer button span { font-size: 22px; margin-left: 13px; vertical-align: -2px; }.canvas-caption { background: rgba(7, 18, 23, .86); bottom: 0; color: #f7f3e8; font-size: 11px; left: 0; letter-spacing: .01em; max-width: 100%; padding: 10px 13px; position: absolute; }
+.controls { align-items: center; display: flex; justify-content: space-between; gap: 10px; padding: 12px 2px calc(2px + env(safe-area-inset-bottom)); }.control-group { display: flex; gap: 7px; }.control-group button { background: #1c3438; border: 1px solid #526b6d; color: #f7f3e8; min-height: 44px; min-width: 48px; touch-action: none; }.control-group button:active { background: #6ee7e0; color: #071217; }.action-controls button { color: #ffbd4a; font-size: 11px; font-weight: 700; min-width: 70px; }.action-controls button:active { background: #ffbd4a; color: #071217; }.manual { border-top: 1px solid #526b6d; color: #9db0ac; display: flex; flex-wrap: wrap; font-size: 10px; gap: 16px; margin-top: 22px; padding-top: 12px; }.manual p { margin: 0; }.manual b { color: #ffbd4a; margin-right: 4px; }.manual-note { color: #718787; margin-left: auto !important; }
+/* 게임 영역에서는 브라우저 제스처(스크롤·더블탭 확대·길게 눌러 선택)가 조작을 가로채지 않게 한다. */
+.machine, .controls, .canvas-frame { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.canvas-frame, .canvas-frame canvas { touch-action: none; }
+.start-layer button, .win-layer button, .shift-button { touch-action: manipulation; }
+
+@media (max-width: 700px) { .app-shell { width: min(100% - 24px, 1180px); padding-top: 14px; }
+  /* 세로 화면에서는 게임까지 스크롤해도 점수·내구도가 계속 보여야 한다. */
+  .topbar { background: #071217; gap: 10px; padding: calc(6px + env(safe-area-inset-top)) 0 10px; position: sticky; top: 0; z-index: 5; }.status-strip { font-size: 9px; gap: 8px; }.status-strip b { font-size: 12px; }.combos { border-left: 0; padding-left: 0; width: 100%; }.hero { display: block; padding: 42px 0 25px; }.lead { font-size: 13px; }.shift-meter { margin-top: 30px; }.cards { grid-template-columns: 1fr 1fr; }.rule-card { min-height: 125px; padding: 13px; }.rule-card.card-2 { transform: translateY(8px); }.rule-card h2 { font-size: 17px; }.rule-symbol { right: 12px; }.shift-button { grid-column: 1 / -1; justify-self: stretch; min-height: 54px; }.machine { margin-top: 34px; }.canvas-caption { font-size: 9px; }.manual { gap: 8px 12px; line-height: 1.45; }.manual-note { margin-left: 0 !important; width: 100%; }
+  /* 엄지로 누르는 조작부는 화면 폭을 반씩 나눠 갖고 최소 64px 높이를 확보한다. */
+  .controls { align-items: stretch; gap: 8px; padding: 10px 12px calc(2px + env(safe-area-inset-bottom)); }.control-group { flex: 1 1 0; gap: 8px; }.control-group button { flex: 1 1 0; font-size: 24px; min-height: 64px; min-width: 0; }.action-controls button { font-size: 13px; }
+  .start-layer button, .win-layer button { min-height: 56px; padding: 15px 24px; }
+  /* 좁은 폰에서는 게임판을 화면 끝까지 넓혀 플레이 면적을 최대로 확보한다. */
+  .machine { border-left: 0; border-right: 0; margin-left: -12px; margin-right: -12px; padding: 6px 0; width: calc(100% + 24px); }.canvas-caption { font-size: 10px; } }
+
+/* 가로로 눕힌 폰: 카피를 접고, 조작부를 캔버스 위에 얹어 게임판이 화면 높이를 최대한 쓰게 한다. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .app-shell { padding: 6px 0 8px; width: min(100% - 16px, 1180px); }
+  .hero, .manual, .brand { display: none; }
+  .topbar { border-bottom: 0; justify-content: flex-end; padding-bottom: 5px; }
+  .status-strip { font-size: 9px; gap: 10px; }.status-strip b { font-size: 12px; }.combos { display: none; }
+  .rule-deck { border-top: 0; padding-top: 0; }
+  .deck-label { font-size: 9px; margin: 0 0 5px; }
+  .cards { gap: 6px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .rule-card { border-left-width: 4px; min-height: 0; padding: 5px 10px; }
+  .rule-card.card-2 { transform: none; }
+  .rule-card p, .rule-symbol, .card-index { display: none; }
+  .rule-card h2 { font-size: 13px; letter-spacing: -.05em; margin: 0; }
+  .shift-button { font-size: 10px; min-height: 30px; padding: 0 10px; }.shift-button span { font-size: 14px; }
+  .machine { border-left: 1px solid #526b6d; border-right: 1px solid #526b6d; margin: 6px 0 0; padding: 5px; position: relative; width: auto; }
+  .canvas-frame { margin: 0 auto; width: min(100%, calc((100vh - 96px) * 16 / 9)); width: min(100%, calc((100dvh - 96px) * 16 / 9)); }
+  .canvas-caption { font-size: 9px; left: 130px; padding: 6px 10px; right: 148px; }
+  .controls { bottom: calc(5px + env(safe-area-inset-bottom)); left: 5px; padding: 0; pointer-events: none; position: absolute; right: 5px; }
+  .control-group { flex: 0 0 auto; gap: 8px; pointer-events: auto; }
+  .control-group button { background: rgba(28, 52, 56, .8); flex: 0 0 auto; font-size: 20px; min-height: 46px; min-width: 56px; }
+  .action-controls button { font-size: 11px; min-width: 64px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
